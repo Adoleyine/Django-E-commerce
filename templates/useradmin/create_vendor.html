@@ -1,0 +1,93 @@
+{% extends 'useradmin/base.html' %}
+{% load static %}
+{% load humanize %}
+{{ form.media }}
+{% block content %}
+<head>
+    <style>
+        select {
+            appearance: none;
+            outline: 0;
+            background: rgba(240, 240, 240, 0.548);
+            background-image: none;
+            width: 100%;
+            height: 50px;
+            color: black;
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+        }
+        
+        .form-control {
+            border-radius: .25em;
+        }
+    </style>
+</head>
+<section class="content-main">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Create Vendor Profile</h2>
+                    <div>
+                        <button class="btn btn-md rounded font-sm hover-up">Save Profile <i class="fas fa-check-circle ms-2"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Basic Information</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ form.errors }}</strong>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <label for="id_title" class="form-label">Vendor Name</label>
+                            {{ form.title }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Description</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Address</label>
+                            {{ form.address }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Contact Number</label>
+                            {{ form.contact }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Media</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-upload">
+                           <img src="{% static 'assets2/imgs/theme/upload.svg' %}" alt="" />
+                            {{ form.image }}
+                            <img src="{% static 'assets2/imgs/theme/upload.svg' %}" alt="" />
+                            {{ form.cover_image }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn mt-3 btn-md rounded font-sm hover-up" type="submit">Save Profile</button>
+    </form>
+</section>
+{% endblock content %}

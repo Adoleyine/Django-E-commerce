@@ -1,0 +1,109 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}
+    
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="index.html" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+                    <span></span> Shop <span></span> Checkout
+                </div>
+            </div>
+        </div>
+        <div class="container mb-80 mt-50">
+            <div class="row">
+                <div class="col-lg-8 mb-40">
+                    <h1 class="heading-2 mb-10">Checkout</h1>
+                    <div class="d-flex justify-content-between"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="row">
+                        {% for order in order_items %}
+                        <div class="col-lg-6 mb-2">
+                            <div class="card" style="max-width: 540px;">
+                                <div class="row g-0">
+                                    <div class="col-sm-4">
+                                        <img src="{{order.image}}" style="width: 100%; height: 200px; object-fit: cover;" class="rounded-start" alt="Card image" />
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{order.item}}</h5>
+                                            <p class="card-text fs-sm">Qty: {{ order.quantity }}</p>
+                                            <p class="card-text fs-sm">Price: GHC{{ order.price }}</p>
+                                            <p class="card-text fs-sm">Total: GHC{{ order.total }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="border cart-totals mb-50">
+                        <div class="d-flex align-items-end justify-content-between mb-30">
+                            <h4>Order Summary</h4>
+                        </div>
+
+                        <div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <p class="fw-bold">Tax</p>
+                                <p>GHC0</p>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <p class="fw-bold">Shipping</p>
+                                <p>GHC0</p>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <p class="fw-bold">Discount</p>
+                                <p>GHC{{ order.saved }}</p>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <p class="fw-bold">Total</p>
+                                <p>GHC{{order.price}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="makePayStackPayment()" style="background-color:green;" class="button uft_booking_confirmation_button margin-top-10 margin-bottom-10 w-100"><i class="fas fa-credit-card">Pay</i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://js.paystack.co/v2/inline.js"></script>
+    <script>
+        function makePayStackPayment(){
+            const paystack = new PaystackPop();
+
+            paystack.newTransaction({
+                key: "pk_test_1312e44f1629d965200577a5a9ae1e0447950c66",
+                email: "prince.adoleyine.edu@gmail.com",
+                amount: "{{order_total}}",
+
+                onSuccess: (transaction) => {
+                    console.log(transaction);
+                    if (transaction.status = "success"){
+                        window.location.href =  `/payment-successful/{{order.oid}}/?reference=${transaction.reference}`;
+                    }
+                    
+                },
+
+                onCancel: () => {
+                    console.log(transaction);
+                    if (transaction.status = "declined"){
+                        window.location.href =  `/payment-failed/?reference=${transaction.reference}`;
+                    }
+                },
+            });
+        }
+    </script>
+
+
+{% endblock content %}
+    

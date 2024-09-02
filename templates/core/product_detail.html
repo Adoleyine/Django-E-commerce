@@ -1,0 +1,466 @@
+{% extends "partials/base.html" %}
+{% load static %}
+
+{% block content %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script src="{% static 'assets/js/prism.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'assets/css/prism.css' %}">
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="{% url 'core:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+                    <span></span> <a
+                        href="{% url 'core:category-product-list' product.category.cid %}">{{ product.category }}</a>
+                    <span></span> {{ product.title|title }}
+                </div>
+            </div>
+        </div>
+        <div class="container mb-30">
+            <div class="row">
+                <div class="col-xl-11 col-lg-12 m-auto">
+                    <div class="row">
+                        <div class="col-xl-9">
+                            <div class="product-detail accordion-detail">
+                                <div class="row mb-50 mt-30">
+                                    <div class="col-md-6 col-sm-12 col-xs-12 mb-md-0 mb-sm-5">
+                                        <div class="detail-gallery">
+                                            <span class="zoom-icon"><i class="fi-rs-search"></i></span>
+                                            <!-- MAIN SLIDES -->
+                                            <div class="product-image-slider" style="height: 350px">
+                                                <figure class="border-radius-10">
+                                                    <img src="{{ product.image.url }}" alt="product image"/>
+                                                </figure>
+
+                                                {% for p_image in product_image %}
+                                                    <figure class="border-radius-10">
+                                                        <img src="{{ p_image.images.url }}" alt="product image"/>
+                                                    </figure>
+                                                {% endfor %}
+                                            </div>
+                                            <!-- THUMBNAILS -->
+                                            <div class="slider-nav-thumbnails">
+                                                <div><img src="{{ product.image.url }}" alt="product image"/></div>
+
+                                                {% for p_image in product_image %}
+                                                    <div>
+                                                        <img src="{{ p_image.images.url }}" alt="product image"/>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <!-- End Gallery -->
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <div class="detail-info pr-30 pl-30">
+                                            <h2 class="title-detail">{{ product.title }}</h2>
+                                            <div class="product-detail-rating">
+                                                <div class="product-rate-cover text-end">
+                                                    <div class="product-rate d-inline-block">
+                                                        <div class="product-rating" style="width: 90%"></div>
+                                                    </div>
+                                                    <span class="font-small ml-5 text-muted"> ({{ reviews.count }} reviews)</span>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix product-price-cover">
+                                                <div class="product-price primary-color float-left">
+                                                    <span class="current-price text-brand">GHC</span><span
+                                                        class="current-price text-brand current-product-price-{{ product.id }}"
+                                                        id="current-product-price">{{ product.price }}</span>
+                                                    <span>
+                                                    <span class="old-price font-md ml-15">GHC{{ product.old_price }}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="short-desc mb-30">
+                                                <p class="font-lg">{{ product.description| truncatechars:150 | safe }}</p>
+                                            </div>
+                                            <div class="detail-extralink mb-50">
+                                                <input type="number" value="1" name="" id="product-quantity"
+                                                       class="w-25 mb-10 product-quantity-{{ product.id }}">
+                                                <br/>
+                                                <div class="product-extra-link2">
+                                                    <!-- <input type="hidden"  value="1" id="product-quantity" class="product-quantity-{{product.id}}"> -->
+                                                    <input type="hidden" value="{{ product.pid }}"
+                                                           class="product-pid-{{ product.id }}" id="">
+                                                    <input type="hidden" class="product-image-{{ product.id }}"
+                                                           value="{{ product.image.url }}" id="">
+                                                    <input type="hidden" class="product-id-{{ product.id }}"
+                                                           value="{{ product.id }}">
+                                                    <input type="hidden" class="product-title-{{ product.id }}"
+                                                           value="{{ product.title }}">
+                                                    <button type="submit" id="add-to-cart-btn"
+                                                            class="button button-add-to-cart add-to-cart-btn"
+                                                            data-index="{{ product.id }}"><i
+                                                            class="fi-rs-shopping-cart"></i>Add to cart
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="font-xs">
+                                                <ul class="float-start">
+                                                    <li class="mb-5">SKU: <a href="#">{{ product.sku }}</a></li>
+                                                    <li class="mb-5">Tags:
+                                                        {% for tag in product.tags.all %}
+                                                            {% if tag.slug %}
+                                                                <a href="{% url 'core:tags' tag.slug %}"
+                                                                   rel="tag">#{{ tag }}</a>{% if not forloop.last %},
+                                                            {% endif %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </li>
+                                                    <li>Stock:<span
+                                                            class="in-stock text-brand ml-5">{{ product.stock_count }} Items In Stock</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <!-- Detail Info -->
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="tab-style3">
+                                        <ul class="nav nav-tabs text-uppercase">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="Description-tab" data-bs-toggle="tab"
+                                                   href="#Description">Description</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="Additional-info-tab" data-bs-toggle="tab"
+                                                   href="#Additional-info">Additional info</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="Vendor-info-tab" data-bs-toggle="tab"
+                                                   href="#Vendor-info">Vendor</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="Reviews-tab" data-bs-toggle="tab"
+                                                   href="#Reviews">Review{{ reviews.count|pluralize }}
+                                                    ({{ reviews.count }})</a>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content shop_info_tab entry-main-content">
+                                            <div class="tab-pane fade show active" id="Description">
+                                                <div class="">
+                                                    <p>{{ product.description|safe }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="Additional-info">
+                                                <p>{{ product.specifications|safe }}</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="Vendor-info">
+                                                <div class="vendor-logo d-flex mb-30">
+                                                    <img src="{{ product.vendor.image.url }}" alt=""/>
+                                                    <div class="vendor-name ml-15">
+                                                        <h6>
+                                                            <a href="{% url 'core:vendor-detail' product.vendor.vid %}">{{ product.vendor.title }}</a>
+                                                        </h6>
+                                                        <div class="product-rate-cover text-end">
+                                                            <div class="product-rate d-inline-block">
+                                                                <div class="product-rating" style="width: 90%"></div>
+                                                            </div>
+                                                            <span class="font-small ml-5 text-muted"> ({{ product.reviews.count }} reviews)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <ul class="contact-infor mb-50">
+                                                    <li><img
+                                                            src="{% static 'assets/imgs/theme/icons/icon-location.svg' %}"
+                                                            alt=""/><strong>Address: </strong>
+                                                        <span>{{ product.vendor.address }}</span></li>
+                                                    <li><img
+                                                            src="{% static 'assets/imgs/theme/icons/icon-contact.svg' %}"
+                                                            alt=""/><strong>Contact
+                                                        Seller: </strong><span>{{ product.vendor.contact }}</span></li>
+                                                </ul>
+                                                <div class="d-flex mb-55">
+                                                    <div class="mr-30">
+                                                        <p class="text-brand font-xs">Rating</p>
+                                                        <h4 class="mb-0">92%</h4>
+                                                    </div>
+                                                </div>
+                                                <p>{{ product.vendor.description }}</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="Reviews">
+                                                <!--Comments-->
+                                                <div class="comments-area">
+                                                    <div class="row">
+                                                        <div class="col-lg-8">
+                                                            <h4 class="mb-30">Customer questions & answers</h4>
+                                                            <div class="comment-list">
+
+                                                                {% for review in reviews %}
+                                                                    <div class="single-comment justify-content-between d-flex mb-30">
+                                                                        <div class="user justify-content-between d-flex">
+                                                                            <div class="thumb text-center">
+                                                                                <img src="{{ review.user.profile.image.url }}"
+                                                                                     alt=""/>
+                                                                                <p class="font-heading text-brand">{{ review.user.username|title }}</p>
+                                                                            </div>
+                                                                            <div class="desc">
+                                                                                <div class="d-flex justify-content-between mb-10">
+                                                                                    <div class="d-flex align-items-center">
+                                                                                        <span class="font-weight-light text-muted">{{ review.date }}</span>
+                                                                                    </div>
+
+                                                                                    <div>
+                                                                                        {% for star in review.rating|ljust:review.rating %}
+                                                                                            <i class="fas fa-star text-warning"></i>
+                                                                                        {% endfor %}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <p class="mb-10">{{ review.review }}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endfor %}
+
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4">
+                                                            <h4 class="mb-30">Customer reviews</h4>
+                                                            <div class="d-flex mb-30">
+                                                                <div class="product-rate d-inline-block mr-15">
+                                                                    <div class="product-rating"
+                                                                         style="width: 90%"></div>
+                                                                </div>
+                                                                <h6>{{ avg.rating|floatformat:1 }} out of 5.0</h6>
+                                                            </div>
+                                                            <div class="progress">
+                                                                <span>5 star</span>
+                                                                <div class="progress-bar" role="progressbar"
+                                                                     style="width: 50%" aria-valuenow="50"
+                                                                     aria-valuemin="0" aria-valuemax="100">50%
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress">
+                                                                <span>4 star</span>
+                                                                <div class="progress-bar" role="progressbar"
+                                                                     style="width: 25%" aria-valuenow="25"
+                                                                     aria-valuemin="0" aria-valuemax="100">25%
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress">
+                                                                <span>3 star</span>
+                                                                <div class="progress-bar" role="progressbar"
+                                                                     style="width: 45%" aria-valuenow="45"
+                                                                     aria-valuemin="0" aria-valuemax="100">45%
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress">
+                                                                <span>2 star</span>
+                                                                <div class="progress-bar" role="progressbar"
+                                                                     style="width: 65%" aria-valuenow="65"
+                                                                     aria-valuemin="0" aria-valuemax="100">65%
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress mb-30">
+                                                                <span>1 star</span>
+                                                                <div class="progress-bar" role="progressbar"
+                                                                     style="width: 85%" aria-valuenow="85"
+                                                                     aria-valuemin="0" aria-valuemax="100">85%
+                                                                </div>
+                                                            </div>
+                                                            <a href="#" class="font-xs text-muted">How are ratings
+                                                                calculated?</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--comment form-->
+
+                                                {% if make_review == True %}
+                                                    {% if request.user.is_authenticated %}
+                                                        <div class="comment-form">
+                                                            <h4 class="mb-15 add-review-text">Add a review</h4>
+                                                            <strong class="text-success" id="review-response"></strong>
+                                                            <!-- <div class="product-rate d-inline-block mb-30"></div> -->
+                                                            <div class="row">
+                                                                <div class="col-lg-8 col-md-12">
+                                                                    <form action="{% url 'core:add-review-form' product.pid %}"
+                                                                          method="POST"
+                                                                          class="form-contact comment_form hide-comment-form"
+                                                                          action="#" id="commentForm">
+                                                                        {% csrf_token %}
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <div class="form-group">
+                                                                                    {{ review_form.review }}
+                                                                                    <!-- <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9" placeholder="Write Comment"></textarea> -->
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-12">
+                                                                                <div class="form-group">
+                                                                                    {{ review_form.rating }}
+                                                                                    <!-- <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9" placeholder="Write Comment"></textarea> -->
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <button type="submit"
+                                                                                    class="button button-contactForm">
+                                                                                Submit Review
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-60">
+
+                                    {% if products %}
+                                        <div class="col-12">
+                                            <h2 class="section-title style-1 mb-30">Related products</h2>
+                                        </div>
+                                    {% endif %}
+                                    <div class="col-12">
+                                        <div class="row related-products">
+
+                                            {% for product in products %}
+                                                <div class="col-lg-3 col-md-4 col-12 col-sm-6">
+                                                    <div class="product-cart-wrap hover-up">
+                                                        <div class="product-img-action-wrap">
+                                                            <div class="product-img product-img-zoom">
+                                                                <a href="{% url 'core:product-detail' product.pid %}"
+                                                                   tabindex="0">
+                                                                    <img class="default-img"
+                                                                         src="{{ product.image.url }}" alt=""/>
+                                                                    <img class="hover-img" src="{{ product.image.url }}"
+                                                                         alt=""/>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-content-wrap">
+                                                            <h2><a href="{% url 'core:product-detail' product.pid %}"
+                                                                   tabindex="0">{{ product.title|truncatechars:30 }}</a>
+                                                            </h2>
+                                                            <div class="rating-result" title="90%">
+                                                                <span> </span>
+                                                            </div>
+                                                            <div class="product-price">
+                                                                <span>GHC</span><span
+                                                                    class="current-price current-product-price-{{ product.id }}  text-brand">{{ product.price }}</span>
+                                                                <span class="old-price">GHC{{ product.old_price }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 primary-sidebar sticky-sidebar mt-30">
+                            <div class="sidebar-widget widget-delivery mb-30 bg-grey-9 box-shadow-none">
+                                <h5 class="section-title style-3 mb-20">Delivery</h5>
+                                <ul>
+                                    <li>
+                                        <i class="fi fi-rs-marker mr-10 text-brand"></i>
+                                        <span>
+                                            {{ address.address }} <br/>
+                                            <br/>
+
+                                            {% if address.status == True %}
+                                                <span class="text-success"><i class="fa fa-shield"
+                                                                              aria-hidden="true"></i>Verified Address</span>
+                                            {% else %}
+                                                <span class="text-danger"><i class="fa fa-times" aria-hidden="true"></i>Unverified Address</span>
+                                            {% endif %}
+                                                
+                                        </span>
+                                        <a href="{% url 'core:dashboard' %}" class="change float-end">Change</a>
+                                    </li>
+                                    <li class="hr"><span></span></li>
+                                </ul>
+                                <h5 class="section-title style-3 mb-20">Return & Warranty</h5>
+                                <ul>
+                                    <li>
+                                        <i class="fi fi-rs-shield-check mr-10 text-brand"></i>
+                                        <span> {{ product.vendor.trust_rating }}% Authentic </span>
+                                    </li>
+                                    <li>
+                                        <i class="fi fi-rs-time-forward-ten mr-10 text-brand"></i>
+                                        <span> {{ product.vendor.days_return }} Day{{ product.vendor.days_return|pluralize }} Return </span>
+                                    </li>
+                                    <li>
+                                        <i class="fi fi-rs-diploma mr-10 text-brand"></i>
+                                        <span> {{ product.vendor.warranty_period }} Month{{ product.vendor.warranty_period|pluralize }} Warranty </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="sidebar-widget widget-vendor mb-30 bg-grey-9 box-shadow-none">
+                                <h5 class="section-title style-3 mb-20">Vendor</h5>
+                                <div class="vendor-logo d-flex mb-30">
+                                    <img src="{{ product.vendor.image.url }}" alt=""/>
+                                    <div class="vendor-name ml-15">
+                                        <h6>
+                                            <a href="{% url 'core:vendor-detail' product.vendor.vid %}">{{ product.vendor.title }}</a>
+                                        </h6>
+                                        <div class="product-rate-cover text-end">
+                                            <div class="product-rate d-inline-block">
+                                                <div class="product-rating" style="width: 90%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="contact-infor">
+                                    <li><img src="{% static 'assets/imgs/theme/icons/icon-location.svg' %}"
+                                             alt=""/><strong>Address: </strong>
+                                        <span>{{ product.vendor.address }}</span></li>
+                                    <li><img src="{% static 'assets/imgs/theme/icons/icon-contact.svg' %}"
+                                             alt=""/><strong>Contact
+                                        Seller:</strong><span>{{ product.vendor.contact }}</span></li>
+                                    <li class="hr"><span></span></li>
+                                </ul>
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="text-brand font-xs">Rating</p>
+                                        <h4 class="mb-0">92%</h4>
+                                    </div>
+                                </div>
+                                <ul>
+                                    <li class="hr"><span></span></li>
+                                </ul>
+                                {% if user.is_authenticated %}
+                                    <p>
+                                        Become a Vendor?
+                                        <a href="{% url 'userAuths:logout-sign-up' %}"> Register now</a>
+                                    </p>
+                                {% else %}
+                                    <p>
+                                        Become a Vendor?
+                                        <a href="{% url 'userAuths:sign-up' %}"> Register now</a>
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="sidebar-widget widget-category-2 mb-30">
+                                <h5 class="section-title style-1 mb-30">Category</h5>
+                                <ul>
+
+                                    {% for category in categories %}
+                                        <li>
+                                            <a href="{% url 'core:category-product-list' category.cid %}"> <img
+                                                    src="{{ category.image.url }}" alt=""/>{{ category.title }}</a><span
+                                                class="count">{{ category.category.count }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock content %}
+    
